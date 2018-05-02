@@ -18,7 +18,9 @@ export default class HarmonySong extends React.Component {
 
   onBack = () => {
     this.stop();
-    this.props.setParentState({ song: null });
+    setTimeout(() => {
+      this.props.setParentState({ song: null });
+    }, 500);
   };
 
   togglePart = part => {

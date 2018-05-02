@@ -20,8 +20,8 @@ const HARMONIES_LIST = [
         a: require('../harmonies/trinity-400-come-thou-fount_A.wav'),
         t: require('../harmonies/trinity-400-come-thou-fount_T.wav'),
         b: require('../harmonies/trinity-400-come-thou-fount_B.wav'),
-        repeat: 1,
-        length: 74617,
+        repeat: 3,
+        length: 25187,
         url: 'https://hymnary.org/page/fetch/HHOF1980/31/high'
 
     },
@@ -33,8 +33,8 @@ const HARMONIES_LIST = [
         a: require('../harmonies/trinity-580-it-is-well_A.wav'),
         t: require('../harmonies/trinity-580-it-is-well_T.wav'),
         b: require('../harmonies/trinity-580-it-is-well_B.wav'),
-        repeat: 1,
-        length: 171038,
+        repeat: 4,
+        length: 43744,
         url: 'https://hymnary.org/page/fetch/TH1990/718/high'
     }
 ];
