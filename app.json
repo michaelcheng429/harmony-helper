@@ -1,0 +1,20 @@
+{
+   "expo": {
+    "name": "Harmony Helper",
+    "icon": "./icon.jpg",
+    "version": "1.0.0",
+    "slug": "harmonyhelper",
+    "sdkVersion": "26.0.0",
+    "ios": {
+      "bundleIdentifier": "com.harmonyhelper",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationAlwaysUsageDescription": "This app will not use this data. The data was only included because of the software used to build this app."
+      }
+    },
+    "android": {
+      "package": "com.harmonyhelper",
+      "versionCode": 2
+    }
+   }
+ }
