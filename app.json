@@ -2,7 +2,7 @@
    "expo": {
     "name": "Harmony Helper",
     "icon": "./icon.png",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "slug": "harmonyhelper",
     "sdkVersion": "26.0.0",
     "ios": {
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.harmonyhelper",
-      "versionCode": 1
+      "versionCode": 2
     }
    }
  }

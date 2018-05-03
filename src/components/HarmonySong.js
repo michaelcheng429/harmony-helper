@@ -16,6 +16,49 @@ export default class HarmonySong extends React.Component {
     }
   }
 
+  componentWillMount() {
+    const { song } = this.props;
+
+    const self = this;
+
+    async function play() {
+      if (song.s) {
+        self.sopranoSound = new Expo.Audio.Sound();
+      }
+      if (song.a) {
+        self.altoSound = new Expo.Audio.Sound();
+      }
+      if (song.t) {
+        self.tenorSound = new Expo.Audio.Sound();
+      }
+      if (song.b) {
+        self.bassSound = new Expo.Audio.Sound();
+      }
+
+      try {
+        if (song.s) {
+          await self.sopranoSound.loadAsync(song.s);
+        }
+
+        if (song.a) {
+          await self.altoSound.loadAsync(song.a);
+        }
+
+        if (song.t) {
+          await self.tenorSound.loadAsync(song.t);
+        }
+
+        if (song.b) {
+          await self.bassSound.loadAsync(song.b);
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    play();
+  }
+
   onBack = () => {
     this.stop();
     setTimeout(() => {
@@ -33,7 +76,7 @@ export default class HarmonySong extends React.Component {
     const { soprano, alto, tenor, bass } = this.state;
 
     const self = this;
-    const timeoutAmount = repeat === 1 ? 750 : song.length;
+    const timeoutAmount = repeat === 1 ? 0 : song.length;
 
     this.playTimeout = setTimeout(async function() {
       self.stop();
@@ -66,51 +109,9 @@ export default class HarmonySong extends React.Component {
   }
 
   play = () => {
-    const { song } = this.props;
-    const { soprano, alto, tenor, bass } = this.state;
-
     this.setState({ playing: true });
 
-    const self = this;
-
-    async function play() {
-      if (soprano && song.s) {
-        self.sopranoSound = new Expo.Audio.Sound();
-      }
-      if (alto && song.a) {
-        self.altoSound = new Expo.Audio.Sound();
-      }
-      if (tenor && song.t) {
-        self.tenorSound = new Expo.Audio.Sound();
-      }
-      if (bass && song.b) {
-        self.bassSound = new Expo.Audio.Sound();
-      }
-
-      try {
-        if (soprano && song.s) {
-          await self.sopranoSound.loadAsync(song.s);
-        }
-
-        if (alto && song.a) {
-          await self.altoSound.loadAsync(song.a);
-        }
-
-        if (tenor && song.t) {
-          await self.tenorSound.loadAsync(song.t);
-        }
-
-        if (bass && song.b) {
-          await self.bassSound.loadAsync(song.b);
-        }
-
-        self.playSong(1);
-      } catch (error) {
-        console.log(error)
-      }
-    };
-
-    play();
+    this.playSong(1);
   };
 
   stop = () => {
