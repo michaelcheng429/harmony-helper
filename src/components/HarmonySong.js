@@ -174,6 +174,7 @@ export default class HarmonySong extends React.Component {
       return (
         <TouchableOpacity style={styles.link} onPress={() => Linking.openURL(song.url)}>
           <Text style={styles.linkText}>Online printable sheet music</Text>
+          <Icon name="arrow-forward" style={{ color: '#039BE5', fontSize: 20 }} />
         </TouchableOpacity>
       );
     }
@@ -188,6 +189,7 @@ export default class HarmonySong extends React.Component {
       return (
         <TouchableOpacity style={styles.link} onPress={() => Linking.openURL('http://new.girbc.org/node/48')}>
           <Text style={styles.linkText}>Buy the Trinity Hymnal (Baptist Edition)</Text>
+          <Icon name="arrow-forward" style={{ color: '#039BE5', fontSize: 20 }} />
         </TouchableOpacity>
       );
     }
@@ -195,49 +197,16 @@ export default class HarmonySong extends React.Component {
     return null;
   }
 
-  renderWebViewToggle() {
-    const { showWebView } = this.state;
-    const { song } = this.props;
-
-    if (!song.url) { return null; }
-
-    return (
-      <TouchableOpacity onPress={() => this.setState({ showWebView: !showWebView })}>
-        <Text style={styles.webViewToggle}>
-          {showWebView ? 'Hide sheet music' : 'Show sheet music'}
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
-  renderWebView() {
-    const { song } = this.props;
-
-    if (!song.url || !this.state.showWebView) { return null; }
-
-    return (
-      <WebView source={{ uri: song.url }} />
-    );
-  }
-
   render() {
     const { renderTitle, song } = this.props;
-    const { soprano, alto, tenor, bass, showWebView } = this.state;
-
-    if (showWebView) {
-      return (
-        <View style={styles.container}>
-          {this.renderPlay()}
-          {this.renderWebViewToggle()}
-          {this.renderWebView()}
-        </View>
-      );
-    }
+    const { soprano, alto, tenor, bass } = this.state;
 
     return (
       <View style={styles.container}>
         <ScrollView>
-          <ActionButton icon="arrow-back" style={{ marginTop: 20 }} onPress={this.onBack} />
+          <View style={{ position: 'relative', height: 100, width: 100 }}>
+            <ActionButton icon="arrow-back" onPress={this.onBack} />
+          </View>
           <Text style={styles.songTitle}>{renderTitle(song)}</Text>
           {
             song.s
@@ -288,9 +257,11 @@ export default class HarmonySong extends React.Component {
               : null
           }
           {this.renderPlay()}
-          {this.renderWebViewToggle()}
-          {this.renderSheetMusic()}
-          {this.renderBookLink()}
+          <View style={styles.linksContainer}>
+            <Text style={{ fontSize: 20 }}>You can either print out the sheet music or use the hymnal:</Text>
+            {this.renderSheetMusic()}
+            {this.renderBookLink()}
+          </View>
         </ScrollView>
       </View>
     );
@@ -326,20 +297,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 10
   },
+  linksContainer: {
+    borderColor: '#333',
+    borderWidth: 1,
+    marginTop: 20,
+    padding: 10
+  },
   link: {
+    alignItems: 'center',
     display: 'flex',
     flexDirection: 'row',
-    marginTop: 20,
-    width: '85%'
+    marginTop: 15,
   },
   linkText: {
     color: '#039BE5',
     fontSize: 20,
-    marginRight: 10
-  },
-  webViewToggle: {
-    color: '#689F38',
-    fontSize: 20,
-    marginTop: 20
+    marginRight: 5
   }
 });
