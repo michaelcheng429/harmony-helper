@@ -67,7 +67,10 @@ export default class HarmonySong extends React.Component {
   };
 
   togglePart = part => {
-    this.setState({ [part]: !this.state[part] });
+    this.setState({
+      [part]: !this.state[part],
+      playing: false
+    });
     this.stop();
   };
 

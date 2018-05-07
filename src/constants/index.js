@@ -8,7 +8,7 @@ const HARMONIES_LIST = [
         t: require('../harmonies/trinity-01-all-people_T.wav'),
         b: require('../harmonies/trinity-01-all-people_B.wav'),
         repeat: 4,
-        length: 26622,
+        length: 35058,
         url: 'https://hymnary.org/page/fetch/TH1990/1/high'
 
     },
@@ -21,7 +21,7 @@ const HARMONIES_LIST = [
         t: require('../harmonies/trinity-400-come-thou-fount_T.wav'),
         b: require('../harmonies/trinity-400-come-thou-fount_B.wav'),
         repeat: 3,
-        length: 25187,
+        length: 39594,
         url: 'https://hymnary.org/page/fetch/HHOF1980/31/high'
 
     },
@@ -34,7 +34,7 @@ const HARMONIES_LIST = [
         t: require('../harmonies/trinity-580-it-is-well_T.wav'),
         b: require('../harmonies/trinity-580-it-is-well_B.wav'),
         repeat: 4,
-        length: 43744,
+        length: 57483,
         url: 'https://hymnary.org/page/fetch/TH1990/718/high'
     }
 ];
