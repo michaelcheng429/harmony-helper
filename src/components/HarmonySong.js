@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Switch, Linking, WebView, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Switch, Linking, WebView, ScrollView, Slider } from 'react-native';
 import { partial } from 'lodash';
 import { ActionButton, Icon } from 'react-native-material-ui';
 
@@ -58,6 +58,29 @@ export default class HarmonySong extends React.Component {
 
     play();
   }
+
+  onSpeedChange = value => {
+    const { song } = this.props;
+
+    const self = this;
+
+    async function set() {
+      if (song.s) {
+        await self.sopranoSound.setRateAsync(value, true);
+      }
+      if (song.a) {
+        await self.altoSound.setRateAsync(value, true);
+      }
+      if (song.t) {
+        await self.tenorSound.setRateAsync(value, true);
+      }
+      if (song.b) {
+        await self.bassSound.setRateAsync(value, true);
+      }
+    }
+
+    set();
+  };
 
   onBack = () => {
     this.stop();
@@ -185,6 +208,21 @@ export default class HarmonySong extends React.Component {
     return null; 
   }
 
+  renderLyrics() {
+    const { song } = this.props;
+
+    if (song.lyrics) {
+      return (
+        <TouchableOpacity style={styles.link} onPress={() => Linking.openURL(song.lyrics)}>
+          <Text style={styles.linkText}>Online printable lyrics</Text>
+          <Icon name="arrow-forward" style={{ color: '#039BE5', fontSize: 20 }} />
+        </TouchableOpacity>
+      );
+    }
+
+    return null; 
+  }
+
   renderBookLink() {
     const { song } = this.props;
 
@@ -211,14 +249,30 @@ export default class HarmonySong extends React.Component {
             <ActionButton icon="arrow-back" onPress={this.onBack} />
           </View>
           <Text style={styles.songTitle}>{renderTitle(song)}</Text>
+          <View style={styles.sliderContainer}>
+            <Text style={styles.sliderText}>Speed</Text>
+            <Slider style={{ flexGrow: 1 }} value={1} minimumValue={.5} maximumValue={1.5} onValueChange={this.onSpeedChange} />
+          </View>
           {
             song.s
               ? (
-                <View style={styles.partContainer}>
-                  <Switch value={soprano} onValueChange={partial(this.togglePart, 'soprano')} />
-                  <TouchableOpacity onPress={partial(this.togglePart, 'soprano')}>
-                    <Text style={styles.partName}>Soprano</Text>
-                  </TouchableOpacity>
+                <View>
+                  <View style={styles.partContainer}>
+                    <Switch value={soprano} onValueChange={partial(this.togglePart, 'soprano')} />
+                    <TouchableOpacity onPress={partial(this.togglePart, 'soprano')}>
+                      <Text style={styles.partName}>Soprano</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {
+                    soprano
+                      ? (
+                        <View style={styles.sliderContainer}>
+                          <Text style={styles.sliderText}>Volume</Text>
+                          <Slider style={{ flexGrow: 1 }} value={100} />
+                        </View>
+                      )
+                      : null
+                  }
                 </View>
               )
               : null
@@ -261,8 +315,9 @@ export default class HarmonySong extends React.Component {
           }
           {this.renderPlay()}
           <View style={styles.linksContainer}>
-            <Text style={{ fontSize: 20 }}>You can either print out the sheet music or use the hymnal:</Text>
+            <Text style={{ fontSize: 20 }}>Sheet music/lyrics/hymnal:</Text>
             {this.renderSheetMusic()}
+            {this.renderLyrics()}
             {this.renderBookLink()}
           </View>
         </ScrollView>
@@ -316,5 +371,14 @@ const styles = StyleSheet.create({
     color: '#039BE5',
     fontSize: 20,
     marginRight: 5
+  },
+  sliderContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  sliderText: {
+    fontSize: 20,
+    marginRight: 10
   }
 });
