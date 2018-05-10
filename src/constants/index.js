@@ -62,7 +62,9 @@ const HARMONIES_LIST = [
     {
         title: 'Carol of the Bells',
         s: require('../harmonies/carol-of-bells_S.mp3'),
+        a: require('../harmonies/carol-of-bells_A.mp3'),
         t: require('../harmonies/carol-of-bells_T.mp3'),
+        b: require('../harmonies/carol-of-bells_B.mp3'),
         repeat: 2,
         length: 56085,
         lyrics: 'https://genius.com/John-williams-carol-of-the-bells-lyrics'

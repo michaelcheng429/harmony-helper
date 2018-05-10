@@ -12,7 +12,13 @@ export default class HarmonySong extends React.Component {
       alto: false,
       tenor: false,
       bass: false,
-      playing: false
+      sopranoVolume: 1,
+      altoVolume: 1,
+      tenorVolume: 1,
+      bassVolume: 1,
+      playing: false,
+      rate: 1,
+      length: 0
     }
   }
 
@@ -38,18 +44,38 @@ export default class HarmonySong extends React.Component {
       try {
         if (song.s) {
           await self.sopranoSound.loadAsync(song.s);
+          await self.sopranoSound.getStatusAsync().then(status => {
+            if (!self.state.length) {
+              self.setState({ length: status.durationMillis });
+            }
+          });
         }
 
         if (song.a) {
           await self.altoSound.loadAsync(song.a);
+          await self.altoSound.getStatusAsync().then(status => {
+            if (!self.state.length) {
+              self.setState({ length: status.durationMillis });
+            }
+          });
         }
 
         if (song.t) {
           await self.tenorSound.loadAsync(song.t);
+          await self.tenorSound.getStatusAsync().then(status => {
+            if (!self.state.length) {
+              self.setState({ length: status.durationMillis });
+            }
+          });
         }
 
         if (song.b) {
           await self.bassSound.loadAsync(song.b);
+          await self.bassSound.getStatusAsync().then(status => {
+            if (!self.state.length) {
+              self.setState({ length: status.durationMillis });
+            }
+          });
         }
       } catch (error) {
         console.log(error)
@@ -64,6 +90,8 @@ export default class HarmonySong extends React.Component {
 
     const self = this;
 
+    this.setState({ rate: value });
+
     async function set() {
       if (song.s) {
         await self.sopranoSound.setRateAsync(value, true);
@@ -76,6 +104,29 @@ export default class HarmonySong extends React.Component {
       }
       if (song.b) {
         await self.bassSound.setRateAsync(value, true);
+      }
+    }
+
+    set();
+  };
+
+  onVolumeChange = (part, value) => {
+    const self = this;
+
+    this.setState({ [`${part}Volume`]: value });
+
+    async function set() {
+      if (part === 'soprano') {
+        await self.sopranoSound.setVolumeAsync(value);
+      }
+      if (part === 'alto') {
+        await self.altoSound.setVolumeAsync(value);
+      }
+      if (part === 'tenor') {
+        await self.tenorSound.setVolumeAsync(value);
+      }
+      if (part === 'bass') {
+        await self.bassSound.setVolumeAsync(value);
       }
     }
 
@@ -99,39 +150,50 @@ export default class HarmonySong extends React.Component {
 
   playSong(repeat) {
     const { song } = this.props;
-    const { soprano, alto, tenor, bass } = this.state;
+    const { soprano, alto, tenor, bass, rate, length } = this.state;
 
     const self = this;
-    const timeoutAmount = repeat === 1 ? 0 : song.length;
 
-    this.playTimeout = setTimeout(async function() {
-      self.stop();
-      self.setState({ playing: true });
+    self.stop();
+    self.setState({ playing: true });
 
+    async function play() {
       if (soprano && song.s) {
         await self.sopranoSound.playAsync();
       }
       
       if (alto && song.a) {
         await self.altoSound.playAsync();
+        await self.altoSound.getStatusAsync(status => {
+
+        });
       }
 
       if (tenor && song.t) {
         await self.tenorSound.playAsync();
+        await self.tenorSound.getStatusAsync(status => {
+
+        });
       }
 
       if (bass && song.b) {
         await self.bassSound.playAsync();
+        await self.bassSound.getStatusAsync(status => {
+
+        });
       }
 
-      if (repeat < song.repeat) {
-        self.playSong(repeat + 1);
-      } else {
-        this.playTimeout = setTimeout(() => {
-          self.stop();
-        }, song.length);
-      }
-    }, timeoutAmount);
+      self.playTimeout = setTimeout(() => {
+        if (repeat < song.repeat) {
+          self.playSong(repeat + 1);
+        } else {
+          self.setState({ playing: false });
+        }
+      }, length / rate);
+    }
+
+    play();
+
   }
 
   play = () => {
@@ -240,7 +302,7 @@ export default class HarmonySong extends React.Component {
 
   render() {
     const { renderTitle, song } = this.props;
-    const { soprano, alto, tenor, bass } = this.state;
+    const { soprano, alto, tenor, bass, playing, rate, sopranoVolume, altoVolume, tenorVolume, bassVolume } = this.state;
 
     return (
       <View style={styles.container}>
@@ -249,10 +311,16 @@ export default class HarmonySong extends React.Component {
             <ActionButton icon="arrow-back" onPress={this.onBack} />
           </View>
           <Text style={styles.songTitle}>{renderTitle(song)}</Text>
-          <View style={styles.sliderContainer}>
-            <Text style={styles.sliderText}>Speed</Text>
-            <Slider style={{ flexGrow: 1 }} value={1} minimumValue={.5} maximumValue={1.5} onValueChange={this.onSpeedChange} />
-          </View>
+          {
+            playing
+            ? null
+            : (
+              <View style={styles.sliderContainer}>
+                <Text style={styles.sliderText}>Speed</Text>
+                <Slider style={{ flexGrow: 1 }} value={rate} minimumValue={.01} maximumValue={2} onValueChange={this.onSpeedChange} />
+              </View>
+            )
+          }
           {
             song.s
               ? (
@@ -268,7 +336,7 @@ export default class HarmonySong extends React.Component {
                       ? (
                         <View style={styles.sliderContainer}>
                           <Text style={styles.sliderText}>Volume</Text>
-                          <Slider style={{ flexGrow: 1 }} value={100} />
+                          <Slider style={{ flexGrow: 1 }} value={sopranoVolume} minimumValue={0} maximumValue={1} onValueChange={partial(this.onVolumeChange, 'soprano')} />
                         </View>
                       )
                       : null
@@ -280,11 +348,23 @@ export default class HarmonySong extends React.Component {
           {
             song.a
               ? (
-                <View style={styles.partContainer}>
-                  <Switch value={alto} onValueChange={partial(this.togglePart, 'alto')} />
-                  <TouchableOpacity onPress={partial(this.togglePart, 'alto')}>
-                    <Text style={styles.partName}>Alto</Text>
-                  </TouchableOpacity>
+                <View>
+                  <View style={styles.partContainer}>
+                    <Switch value={alto} onValueChange={partial(this.togglePart, 'alto')} />
+                    <TouchableOpacity onPress={partial(this.togglePart, 'alto')}>
+                      <Text style={styles.partName}>Alto</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {
+                    alto
+                      ? (
+                        <View style={styles.sliderContainer}>
+                          <Text style={styles.sliderText}>Volume</Text>
+                          <Slider style={{ flexGrow: 1 }} value={altoVolume} minimumValue={0} maximumValue={1} onValueChange={partial(this.onVolumeChange, 'alto')} />
+                        </View>
+                      )
+                      : null
+                  }
                 </View>
               )
               : null
@@ -292,11 +372,23 @@ export default class HarmonySong extends React.Component {
           {
             song.t
               ? (
-                <View style={styles.partContainer}>
-                  <Switch value={tenor} onValueChange={partial(this.togglePart, 'tenor')} />
-                  <TouchableOpacity onPress={partial(this.togglePart, 'tenor')}>
-                    <Text style={styles.partName}>Tenor</Text>
-                  </TouchableOpacity>
+                <View>
+                  <View style={styles.partContainer}>
+                    <Switch value={tenor} onValueChange={partial(this.togglePart, 'tenor')} />
+                    <TouchableOpacity onPress={partial(this.togglePart, 'tenor')}>
+                      <Text style={styles.partName}>Tenor</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {
+                    tenor
+                      ? (
+                        <View style={styles.sliderContainer}>
+                          <Text style={styles.sliderText}>Volume</Text>
+                          <Slider style={{ flexGrow: 1 }} value={tenorVolume} minimumValue={0} maximumValue={1} onValueChange={partial(this.onVolumeChange, 'tenor')} />
+                        </View>
+                      )
+                      : null
+                  }
                 </View>
               )
               : null
@@ -304,11 +396,23 @@ export default class HarmonySong extends React.Component {
           {
             song.b
               ? (
-                <View style={styles.partContainer}>
-                  <Switch value={bass} onValueChange={partial(this.togglePart, 'bass')} />
-                  <TouchableOpacity onPress={partial(this.togglePart, 'bass')}>
-                    <Text style={styles.partName}>Bass</Text>
-                  </TouchableOpacity>
+                <View>
+                  <View style={styles.partContainer}>
+                    <Switch value={bass} onValueChange={partial(this.togglePart, 'bass')} />
+                    <TouchableOpacity onPress={partial(this.togglePart, 'bass')}>
+                      <Text style={styles.partName}>Bass</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {
+                    bass
+                      ? (
+                        <View style={styles.sliderContainer}>
+                          <Text style={styles.sliderText}>Volume</Text>
+                          <Slider style={{ flexGrow: 1 }} value={bassVolume} minimumValue={0} maximumValue={1} onValueChange={partial(this.onVolumeChange, 'bass')} />
+                        </View>
+                      )
+                      : null
+                  }
                 </View>
               )
               : null
@@ -375,7 +479,8 @@ const styles = StyleSheet.create({
   sliderContainer: {
     alignItems: 'center',
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginBottom: 10
   },
   sliderText: {
     fontSize: 20,
