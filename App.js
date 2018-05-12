@@ -34,7 +34,7 @@ export default class App extends React.Component {
         <ThemeProvider>
           <View style={styles.container}>
             <Toolbar
-              centerElement="Harmony Helper"
+              centerElement="The Harmony App"
               style={{
                 container: {
                   backgroundColor: '#F06292'
