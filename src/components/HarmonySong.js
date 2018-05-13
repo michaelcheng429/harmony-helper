@@ -30,45 +30,49 @@ export default class HarmonySong extends React.Component {
   }
 
   componentWillMount() {
+    Expo.Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true
+    });
+
     const { song } = this.props;
     const { length } = this.state;
 
-      if (song.s) {
-        this.setState({ sopranoStatus: 'loading' })
+    if (song.s) {
+      this.setState({ sopranoStatus: 'loading' })
 
-        this.sopranoSound = new Expo.Audio.Sound();
+      this.sopranoSound = new Expo.Audio.Sound();
 
-        this.sopranoSound.loadAsync(song.s).then(status => {
-          this.setState({ sopranoStatus: 'loaded', length: status.durationMillis });
-        });
-      }
-      if (song.a) {
-        this.setState({ altoStatus: 'loading' })
+      this.sopranoSound.loadAsync(song.s).then(status => {
+        this.setState({ sopranoStatus: 'loaded', length: status.durationMillis });
+      });
+    }
+    if (song.a) {
+      this.setState({ altoStatus: 'loading' })
 
-        this.altoSound = new Expo.Audio.Sound();
+      this.altoSound = new Expo.Audio.Sound();
 
-        this.altoSound.loadAsync(song.a).then(status => {
-          this.setState({ altoStatus: 'loaded', length: status.durationMillis });
-        });
-      }
-      if (song.t) {
-        this.setState({ tenorStatus: 'loading' })
+      this.altoSound.loadAsync(song.a).then(status => {
+        this.setState({ altoStatus: 'loaded', length: status.durationMillis });
+      });
+    }
+    if (song.t) {
+      this.setState({ tenorStatus: 'loading' })
 
-        this.tenorSound = new Expo.Audio.Sound();
+      this.tenorSound = new Expo.Audio.Sound();
 
-        this.tenorSound.loadAsync(song.t).then(status => {
-          this.setState({ tenorStatus: 'loaded', length: status.durationMillis });
-        });
-      }
-      if (song.b) {
-        this.setState({ bassStatus: 'loading' })
+      this.tenorSound.loadAsync(song.t).then(status => {
+        this.setState({ tenorStatus: 'loaded', length: status.durationMillis });
+      });
+    }
+    if (song.b) {
+      this.setState({ bassStatus: 'loading' })
 
-        this.bassSound = new Expo.Audio.Sound();
+      this.bassSound = new Expo.Audio.Sound();
 
-        this.bassSound.loadAsync(song.b).then(status => {
-          this.setState({ bassStatus: 'loaded', length: status.durationMillis });
-        });
-      }
+      this.bassSound.loadAsync(song.b).then(status => {
+        this.setState({ bassStatus: 'loaded', length: status.durationMillis });
+      });
+    }
   }
 
   getTime(time) {
