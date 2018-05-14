@@ -31,7 +31,11 @@ export default class HarmonySong extends React.Component {
 
   componentWillMount() {
     Expo.Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true
+      playsInSilentModeIOS: true,
+      allowsRecordingIOS: false,
+      interruptionModeIOS: Expo.Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: Expo.Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS
     });
 
     const { song } = this.props;
